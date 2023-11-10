@@ -1,0 +1,44 @@
+import requests
+import json
+import time
+import csv
+import base64
+
+url = "https://api.bithumb.com/public/transaction_history/BTC_KRW/?count=5"
+headers = {"accept": "application/json"}
+
+mst = 0
+
+file_path = "/Users/hongseog-yun/Desktop/ai 암화이/2023-11-10-bithumb-btc-orderbook.csv"
+csv_header = "price","quantity","type","timestamp"
+
+with open(file_path, "a", newline="") as csvfile:
+    csvwriter = csv.writer(csvfile)
+    csvwriter.writerow(csv_header)
+    
+while mst < 5:
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        timestamp = [transaction['transaction_date'] for transaction in data['data']]
+        prices = [transaction['price'] for transaction in data['data']]
+        quantity = [transaction['units_traded'] for transaction in data['data']]
+        typ = [transaction['type'] for transaction in data['data']]
+        
+        # CSV 파일에 데이터 추가
+        with open(file_path, "a", newline="") as csvfile:
+            csvwriter = csv.writer(csvfile)
+            for k in range(5):
+                if typ[k] == "bid":
+                    typn = 0
+                else:
+                    typn = 1
+                csvwriter.writerow([prices[k], quantity[k], typn, timestamp[k]])
+        
+        print("데이터 추가 완료.")
+
+        
+    else:
+        print("api 에서 불러오기 실패")
+    mst += 1
+    time.sleep(1)
