@@ -83,14 +83,14 @@ def live_cal_book_i_v1(param, gr_bid_level, gr_ask_level, var, mid, seq):
     indicator_value = (book_price - mid) / bid_ask_spread
     #indicator_value = (book_price - mid_price)
     seq += 1
-    if seq < 4:
+    if seq < 5:
         return_value = 0
     else:
+        server_csv_file_path = "/root/feature_24h.csv"
         df_2 = pd.read_csv(server_csv_file_path)
-        seq5_mid_price = df_2.iloc[-4, 3]
-        seq1_mid_price = mid_price
+        seq5_mid_price = mid
+        seq1_mid_price = df_2.iloc[-4, 2]
         return_value = (seq5_mid_price-seq1_mid_price)/seq1_mid_price
-        print(df_2)
     
 
     return indicator_value , book_delta, return_value, seq
@@ -98,10 +98,6 @@ def live_cal_book_i_v1(param, gr_bid_level, gr_ask_level, var, mid, seq):
 
 csv_file_path = "/root/2023-11-11-bithumb-btc-orderbook.csv"
 df = pd.read_csv(csv_file_path)
-
-server_csv_file_path = "/root/feature_24h.csv"
-if os.path.exists(server_csv_file_path):
-    df_2 = pd.read_csv(server_csv_file_path)
     
 param = [0.2, 5, 1] #ratio,level,interval 
 var = {'_flag': False}
